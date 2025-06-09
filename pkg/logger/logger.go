@@ -1,6 +1,9 @@
 package logger
 
 import (
+	"os"
+	"path/filepath"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -9,6 +12,16 @@ var log *zap.Logger
 
 // InitLogger initializes the logger with the given configuration
 func InitLogger(level, encoding string, outputPaths []string) error {
+	// Ensure log directories exist
+	for _, path := range outputPaths {
+		if path != "stdout" && path != "stderr" {
+			dir := filepath.Dir(path)
+			if err := os.MkdirAll(dir, 0755); err != nil {
+				return err
+			}
+		}
+	}
+
 	encoderConfig := zap.NewProductionEncoderConfig()
 	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder

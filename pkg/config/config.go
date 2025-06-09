@@ -1,6 +1,7 @@
 package config
 
 import (
+	"strings"
 	"time"
 
 	"github.com/spf13/viper"
@@ -60,7 +61,27 @@ type I18nConfig struct {
 
 func LoadConfig(path string) (*Config, error) {
 	viper.SetConfigFile(path)
+
+	// Set replacement values from environment variables
+	viper.SetDefault("database.host", "localhost")
+	viper.SetDefault("database.port", 5432)
+	viper.SetDefault("database.username", "postgres")
+	viper.SetDefault("database.password", "root")
+	viper.SetDefault("database.name", "xyz_multifinance")
+	viper.SetDefault("database.ssl_mode", "disable")
+
+	// Enable environment variable overrides
 	viper.AutomaticEnv()
+	viper.SetEnvPrefix("")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	// Map config keys to environment variables
+	viper.BindEnv("database.host", "DB_HOST")
+	viper.BindEnv("database.port", "DB_PORT")
+	viper.BindEnv("database.username", "DB_USER")
+	viper.BindEnv("database.password", "DB_PASSWORD")
+	viper.BindEnv("database.name", "DB_NAME")
+	viper.BindEnv("database.ssl_mode", "DB_SSLMODE")
 
 	err := viper.ReadInConfig()
 	if err != nil {

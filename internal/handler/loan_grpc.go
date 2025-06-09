@@ -3,9 +3,9 @@ package handler
 import (
 	"context"
 
-	"github.com/pt-xyz-multifinance/internal/model"
-	"github.com/pt-xyz-multifinance/internal/usecase"
-	pb "github.com/pt-xyz-multifinance/proto/gen/go/xyz/multifinance/v1"
+	"github.com/edosulai/pt-xyz-multifinance/internal/model"
+	"github.com/edosulai/pt-xyz-multifinance/internal/usecase"
+	pb "github.com/edosulai/pt-xyz-multifinance/proto/gen/go/xyz/multifinance/v1"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

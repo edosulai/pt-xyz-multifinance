@@ -2,10 +2,11 @@ package handler
 
 import (
 	"context"
+	"errors"
 
-	"github.com/pt-xyz-multifinance/internal/model"
-	"github.com/pt-xyz-multifinance/internal/usecase"
-	pb "github.com/pt-xyz-multifinance/proto/gen/go/xyz/multifinance/v1"
+	"github.com/edosulai/pt-xyz-multifinance/internal/model"
+	"github.com/edosulai/pt-xyz-multifinance/internal/usecase"
+	pb "github.com/edosulai/pt-xyz-multifinance/proto/gen/go/xyz/multifinance/v1"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -40,8 +41,24 @@ func (h *UserHandler) Register(ctx context.Context, req *pb.RegisterRequest) (*p
 
 	err := h.userUseCase.Register(ctx, user)
 	if err != nil {
-		h.logger.Error("Failed to register user", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to register user")
+		code := codes.Internal
+		msg := "failed to register user"
+
+		switch {
+		case errors.As(err, &usecase.ValidationError{}):
+			code = codes.InvalidArgument
+			msg = err.Error()
+		case errors.As(err, &usecase.ConflictError{}):
+			code = codes.AlreadyExists
+			msg = err.Error()
+		default:
+			h.logger.Error("Failed to register user",
+				zap.Error(err),
+				zap.String("username", user.Username),
+				zap.String("email", user.Email))
+		}
+
+		return nil, status.Error(code, msg)
 	}
 
 	return &pb.RegisterResponse{

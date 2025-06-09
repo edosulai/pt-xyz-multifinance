@@ -11,17 +11,17 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/edosulai/pt-xyz-multifinance/internal/handler"
+	"github.com/edosulai/pt-xyz-multifinance/internal/repo"
+	"github.com/edosulai/pt-xyz-multifinance/internal/usecase"
+	"github.com/edosulai/pt-xyz-multifinance/pkg/config"
+	"github.com/edosulai/pt-xyz-multifinance/pkg/database"
+	"github.com/edosulai/pt-xyz-multifinance/pkg/logger"
+	"github.com/edosulai/pt-xyz-multifinance/pkg/middleware"
+	pb "github.com/edosulai/pt-xyz-multifinance/proto/gen/go/xyz/multifinance/v1"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	_ "github.com/lib/pq"
-	"github.com/pt-xyz-multifinance/internal/handler"
-	"github.com/pt-xyz-multifinance/internal/repo"
-	"github.com/pt-xyz-multifinance/internal/usecase"
-	"github.com/pt-xyz-multifinance/pkg/config"
-	"github.com/pt-xyz-multifinance/pkg/database"
-	"github.com/pt-xyz-multifinance/pkg/logger"
-	"github.com/pt-xyz-multifinance/pkg/middleware"
-	pb "github.com/pt-xyz-multifinance/proto/gen/go/xyz/multifinance/v1"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -169,13 +169,12 @@ func initHTTPServer(cfg *config.Config, log *zap.Logger, userUseCase usecase.Use
 			next.ServeHTTP(w, r)
 		})
 	})
-
-	// Serve API endpoints
-	router.PathPrefix("/v1/").Handler(gwmux)
-
-	// Add additional HTTP routes
+	// Add additional HTTP routes first
 	httpHandler := handler.NewHTTPHandler(log)
 	httpHandler.RegisterHTTPRoutes(router)
+
+	// Then serve gRPC-Gateway API endpoints
+	router.PathPrefix("/v1/").Handler(gwmux)
 
 	// Configure HTTP server
 	srv := &http.Server{

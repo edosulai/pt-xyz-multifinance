@@ -6,9 +6,9 @@ import (
 	"errors"
 	"time"
 
+	"github.com/edosulai/pt-xyz-multifinance/internal/model"
+	"github.com/edosulai/pt-xyz-multifinance/pkg/database"
 	"github.com/lib/pq"
-	"github.com/pt-xyz-multifinance/internal/model"
-	"github.com/pt-xyz-multifinance/pkg/database"
 )
 
 // UserRepositoryImpl implements LoanRepository interface using native SQL
@@ -62,13 +62,12 @@ func (r *UserRepositoryImpl) GetByID(ctx context.Context, id string) (*model.Use
 			   created_at, updated_at
 		FROM users
 		WHERE id = $1 AND deleted_at IS NULL`
-
 	user, err := r.scanSingleUser(ctx, query, id)
 	if err != nil {
 		return nil, err
 	}
 	if user == nil {
-		return nil, errors.New("user not found")
+		return nil, errors.New("user not found") // Keep this error for GetByID since it's expected to find a user
 	}
 	return user, nil
 }

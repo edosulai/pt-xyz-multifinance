@@ -3,7 +3,7 @@ package repo
 import (
 	"context"
 
-	"github.com/pt-xyz-multifinance/internal/model"
+	"github.com/edosulai/pt-xyz-multifinance/internal/model"
 )
 
 // LoanRepository defines the interface for loan data access

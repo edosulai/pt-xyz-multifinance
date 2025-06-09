@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/edosulai/pt-xyz-multifinance/pkg/config"
+	"github.com/edosulai/pt-xyz-multifinance/pkg/database"
 	_ "github.com/lib/pq"
-	"github.com/pt-xyz-multifinance/pkg/config"
-	"github.com/pt-xyz-multifinance/pkg/database"
 )
 
 // TestDB represents a test database instance

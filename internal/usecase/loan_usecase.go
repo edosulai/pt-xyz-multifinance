@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/pt-xyz-multifinance/internal/model"
-	"github.com/pt-xyz-multifinance/internal/repo"
+	"github.com/edosulai/pt-xyz-multifinance/internal/model"
+	"github.com/edosulai/pt-xyz-multifinance/internal/repo"
 )
 
 // LoanUseCase defines the interface for loan business logic

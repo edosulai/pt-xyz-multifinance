@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/edosulai/pt-xyz-multifinance/pkg/config"
+	"github.com/edosulai/pt-xyz-multifinance/pkg/logger"
 	_ "github.com/lib/pq"
-	"github.com/pt-xyz-multifinance/pkg/config"
-	"github.com/pt-xyz-multifinance/pkg/logger"
 	"go.uber.org/zap"
 )
 

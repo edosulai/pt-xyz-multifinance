@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pt-xyz-multifinance/internal/model"
-	"github.com/pt-xyz-multifinance/internal/usecase"
+	"github.com/edosulai/pt-xyz-multifinance/internal/model"
+	"github.com/edosulai/pt-xyz-multifinance/internal/usecase"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/crypto/bcrypt"

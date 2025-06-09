@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/pt-xyz-multifinance/internal/model"
-	"github.com/pt-xyz-multifinance/pkg/database"
+	"github.com/edosulai/pt-xyz-multifinance/internal/model"
+	"github.com/edosulai/pt-xyz-multifinance/pkg/database"
 )
 
 // LoanRepositoryImpl implements LoanRepository interface using native SQL

@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+      - DB_NAME=xyz_multifinance
+      - DB_SSLMODE=disable
+    depends_on:
+      - db
+    networks:
+      - xyz-network
+
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=xyz_multifinance
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - xyz-network
+
+volumes:
+  postgres_data:
+
+networks:
+  xyz-network:
+    driver: bridge

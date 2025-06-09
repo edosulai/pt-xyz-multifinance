@@ -9,9 +9,9 @@ import (
 	"unicode"
 
 	"github.com/dchest/captcha"
+	"github.com/edosulai/pt-xyz-multifinance/internal/model"
+	"github.com/edosulai/pt-xyz-multifinance/internal/repo"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/pt-xyz-multifinance/internal/model"
-	"github.com/pt-xyz-multifinance/internal/repo"
 	"github.com/ulule/limiter/v3"
 	"github.com/ulule/limiter/v3/drivers/store/memory"
 	"golang.org/x/crypto/bcrypt"
@@ -81,58 +81,35 @@ func (u *userUseCase) checkLoginRateLimit(ctx context.Context, identifier string
 func (u *userUseCase) Register(ctx context.Context, user *model.User) error {
 	// Validate required fields
 	if user.Username == "" || user.Password == "" || user.Email == "" {
-		return errors.New("username, password and email are required")
+		return ErrMissingRequired
 	}
 
 	// Validate email format
 	if !strings.Contains(user.Email, "@") || !strings.Contains(user.Email, ".") {
-		return errors.New("invalid email format")
-	}
-	// Validate password strength (minimum 8 characters, at least one number, uppercase, and special char)
-	if len(user.Password) < 8 {
-		return errors.New("password must be at least 8 characters long")
+		return ErrInvalidEmail
 	}
 
-	var (
-		hasNumber  bool
-		hasUpper   bool
-		hasSpecial bool
-	)
-
-	for _, char := range user.Password {
-		switch {
-		case unicode.IsNumber(char):
-			hasNumber = true
-		case unicode.IsUpper(char):
-			hasUpper = true
-		case strings.ContainsRune("!@#$%^&*()_+-=[]{}|;:,.<>?", char):
-			hasSpecial = true
-		}
-	}
-
-	if !hasNumber {
-		return errors.New("password must contain at least one number")
-	}
-	if !hasUpper {
-		return errors.New("password must contain at least one uppercase letter")
-	}
-	if !hasSpecial {
-		return errors.New("password must contain at least one special character")
-	}
-
-	// Check if user already exists
-	existingUser, err := u.userRepo.GetByUsername(ctx, user.Username)
-	if err != nil {
+	// Validate password strength
+	if err := validatePassword(user.Password); err != nil {
 		return err
 	}
+
+	// Check if username exists
+	existingUser, _ := u.userRepo.GetByUsername(ctx, user.Username)
 	if existingUser != nil {
-		return ErrUserExists
+		return NewConflictError("username already exists")
+	}
+
+	// Check if email exists
+	existingUser, _ = u.userRepo.GetByEmail(ctx, user.Email)
+	if existingUser != nil {
+		return NewConflictError("email already registered")
 	}
 
 	// Hash password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to hash password: %w", err)
 	}
 	user.Password = string(hashedPassword)
 
@@ -141,7 +118,11 @@ func (u *userUseCase) Register(ctx context.Context, user *model.User) error {
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
 
-	return u.userRepo.Create(ctx, user)
+	if err := u.userRepo.Create(ctx, user); err != nil {
+		return fmt.Errorf("failed to create user: %w", err)
+	}
+
+	return nil
 }
 
 func (u *userUseCase) Login(ctx context.Context, username, password string) (string, string, *model.User, error) {
@@ -291,6 +272,36 @@ func (u *userUseCase) generateTokens(user *model.User) (string, string, error) {
 	}
 
 	return accessToken, refreshToken, nil
+}
+
+// validatePassword checks password strength requirements
+func validatePassword(password string) error {
+	if len(password) < 8 {
+		return ErrInvalidPassword
+	}
+
+	var (
+		hasNumber  bool
+		hasUpper   bool
+		hasSpecial bool
+	)
+
+	for _, char := range password {
+		switch {
+		case unicode.IsNumber(char):
+			hasNumber = true
+		case unicode.IsUpper(char):
+			hasUpper = true
+		case strings.ContainsRune("!@#$%^&*()_+-=[]{}|;:,.<>?", char):
+			hasSpecial = true
+		}
+	}
+
+	if !hasNumber || !hasUpper || !hasSpecial {
+		return ErrInvalidPassword
+	}
+
+	return nil
 }
 
 type UserOption func(*userUseCase)

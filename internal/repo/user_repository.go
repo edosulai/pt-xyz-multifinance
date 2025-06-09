@@ -3,7 +3,7 @@ package repo
 import (
 	"context"
 
-	"github.com/pt-xyz-multifinance/internal/model"
+	"github.com/edosulai/pt-xyz-multifinance/internal/model"
 )
 
 // UserRepository defines the interface for user-related database operations

@@ -3,7 +3,7 @@ package testutil
 import (
 	"testing"
 
-	"github.com/pt-xyz-multifinance/pkg/logger"
+	"github.com/edosulai/pt-xyz-multifinance/pkg/logger"
 )
 
 // InitTestLogger initializes the logger for tests

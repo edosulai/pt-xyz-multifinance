@@ -42,7 +42,23 @@
           SwaggerUIBundle.plugins.DownloadUrl
         ],
         layout: "StandaloneLayout",
-        supportedSubmitMethods: ["get", "put", "post", "delete", "options", "head", "patch", "trace"]
+        supportedSubmitMethods: ["get", "put", "post", "delete", "options", "head", "patch", "trace"],
+        persistAuthorization: true,
+        requestInterceptor: (req) => {
+          // Get the JWT token from localStorage
+          const token = localStorage.getItem('jwt_token');
+          if (token) {
+            req.headers.Authorization = `Bearer ${token}`;
+          }
+          return req;
+        },
+        responseInterceptor: (res) => {
+          // Check if this is a login response with a token
+          if (res.url && res.url.endsWith('/v1/auth/login') && res.status === 200 && res.data && res.data.token) {
+            localStorage.setItem('jwt_token', res.data.token);
+          }
+          return res;
+        }
       });
       // End Swagger UI call region
 

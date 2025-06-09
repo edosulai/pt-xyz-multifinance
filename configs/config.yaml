@@ -4,12 +4,12 @@ server:
 
 database:
   driver: postgres
-  host: localhost
-  port: 5432
-  username: postgres
-  password: root
-  name: xyz_multifinance
-  ssl_mode: disable
+  host: ${DB_HOST:-localhost}
+  port: ${DB_PORT:-5432}
+  username: ${DB_USER:-postgres}
+  password: ${DB_PASSWORD:-root}
+  name: ${DB_NAME:-xyz_multifinance}
+  ssl_mode: ${DB_SSLMODE:-disable}
 
 redis:
   host: localhost

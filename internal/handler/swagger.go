@@ -8,7 +8,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/pt-xyz-multifinance/pkg/logger"
+	"github.com/edosulai/pt-xyz-multifinance/pkg/logger"
 	"go.uber.org/zap"
 )
 
@@ -18,15 +18,107 @@ var swaggerUI embed.FS
 // combineSwaggerFiles combines multiple swagger JSON files into one
 func combineSwaggerFiles(files []string) ([]byte, error) {
 	log := logger.GetLogger()
-
 	// Base swagger structure
 	combined := map[string]interface{}{
 		"swagger": "2.0",
 		"info": map[string]interface{}{
-			"title":   "PT XYZ Multifinance API",
-			"version": "1.0",
+			"title":       "PT XYZ Multifinance API",
+			"version":     "1.0",
+			"description": "API for PT XYZ Multifinance services including user management, loans, and utility endpoints",
 		},
-		"paths":       map[string]interface{}{},
+		"securityDefinitions": map[string]interface{}{
+			"BearerAuth": map[string]interface{}{
+				"type":        "apiKey",
+				"name":        "Authorization",
+				"in":          "header",
+				"description": "JWT token in format: Bearer <token>",
+			},
+		},
+		"security": []map[string][]string{
+			{
+				"BearerAuth": {},
+			},
+		},
+		"paths": map[string]interface{}{
+			"/v1/captcha/new": map[string]interface{}{
+				"get": map[string]interface{}{
+					"summary":     "Generate new CAPTCHA",
+					"description": "Generates a new CAPTCHA image and returns its ID",
+					"tags":        []string{"utilities"},
+					"produces":    []string{"application/json"},
+					"responses": map[string]interface{}{
+						"200": map[string]interface{}{
+							"description": "Successful operation",
+							"schema": map[string]interface{}{
+								"type": "object",
+								"properties": map[string]interface{}{
+									"captcha_id": map[string]interface{}{
+										"type":        "string",
+										"description": "ID of the generated CAPTCHA",
+									},
+								},
+							},
+						},
+						"500": map[string]interface{}{
+							"description": "Internal server error",
+						},
+					},
+				},
+			},
+			"/v1/captcha/{id}.png": map[string]interface{}{
+				"get": map[string]interface{}{
+					"summary":     "Get CAPTCHA image",
+					"description": "Returns the CAPTCHA image for the given ID",
+					"tags":        []string{"utilities"},
+					"parameters": []map[string]interface{}{
+						{
+							"name":        "id",
+							"in":          "path",
+							"required":    true,
+							"type":        "string",
+							"description": "CAPTCHA ID",
+						},
+					},
+					"produces": []string{"image/png"},
+					"responses": map[string]interface{}{
+						"200": map[string]interface{}{
+							"description": "CAPTCHA image",
+							"schema": map[string]interface{}{
+								"type": "file",
+							},
+						},
+						"404": map[string]interface{}{
+							"description": "CAPTCHA not found",
+						},
+						"500": map[string]interface{}{
+							"description": "Internal server error",
+						},
+					},
+				},
+			},
+			"/health": map[string]interface{}{
+				"get": map[string]interface{}{
+					"summary":     "Health check",
+					"description": "Returns the health status of the API",
+					"tags":        []string{"utilities"},
+					"produces":    []string{"application/json"},
+					"responses": map[string]interface{}{
+						"200": map[string]interface{}{
+							"description": "Server is healthy",
+							"schema": map[string]interface{}{
+								"type": "object",
+								"properties": map[string]interface{}{
+									"status": map[string]interface{}{
+										"type":    "string",
+										"example": "ok",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		"definitions": map[string]interface{}{},
 	}
 

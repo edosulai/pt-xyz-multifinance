@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package xyz.multifinance.v1;
 
-option go_package = "github.com/pt-xyz-multifinance/proto/gen/go/xyz/multifinance/v1;multifinance";
+option go_package = "github.com/edosulai/pt-xyz-multifinance/proto/gen/go/xyz/multifinance/v1;multifinance";
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
