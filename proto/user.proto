@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package xyz.multifinance.v1;
+
+option go_package = "github.com/pt-xyz-multifinance/proto/gen/go/xyz/multifinance/v1;multifinance";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+// User service definition
+service UserService {
+  // Register a new user
+  rpc Register(RegisterRequest) returns (RegisterResponse) {
+    option (google.api.http) = {
+      post: "/v1/users/register"
+      body: "*"
+    };
+  }
+
+  // Login user
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/v1/users/login"
+      body: "*"
+    };
+  }
+
+  // Get user profile
+  rpc GetProfile(GetProfileRequest) returns (GetProfileResponse) {
+    option (google.api.http) = {
+      get: "/v1/users/profile/{id}"
+    };
+  }
+
+  // Update user profile
+  rpc UpdateProfile(UpdateProfileRequest) returns (UserInfo) {
+    option (google.api.http) = {
+      put: "/v1/users/profile/{id}"
+      body: "*"
+    };
+  }
+}
+
+// Register request message
+message RegisterRequest {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+  string full_name = 4;
+  string phone_number = 5;
+  string address = 6;
+  string ktp_number = 7;
+  double monthly_income = 8;
+}
+
+// Register response message
+message RegisterResponse {
+  UserInfo user = 1;
+}
+
+// Login request message
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+  string captcha_id = 3;
+  string captcha_solution = 4;
+}
+
+// Login response message
+message LoginResponse {
+  string token = 1;
+  string refresh_token = 2;
+  UserInfo user = 3;
+}
+
+// GetProfile request message
+message GetProfileRequest {
+  string id = 1;
+}
+
+// GetProfile response message
+message GetProfileResponse {
+  UserInfo user = 1;
+}
+
+// Update profile request message
+message UpdateProfileRequest {
+  string id = 1;
+  string phone_number = 2;
+  string address = 3;
+  string ktp_number = 4;
+  string full_name = 5;
+  double monthly_income = 6;
+}
+
+// User information message
+message UserInfo {
+  string id = 1;
+  string username = 2;
+  string email = 3;
+  string full_name = 4;
+  string phone_number = 5;
+  string address = 6;
+  string ktp_number = 7;
+  string status = 8;
+  double monthly_income = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}

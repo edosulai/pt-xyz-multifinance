@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS documents;
+DROP TABLE IF EXISTS loans;
+DROP TABLE IF EXISTS users;
+DROP TYPE IF EXISTS document_type;
+DROP TYPE IF EXISTS document_status;
+DROP TYPE IF EXISTS loan_status;
